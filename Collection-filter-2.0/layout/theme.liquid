@@ -1,0 +1,9 @@
+{% comment %}Start filter code{% endcomment %}
+    <script>
+      const moneyFormat = {{ shop.money_format | json }}
+      var theme = {
+        moneyFormat: moneyFormat,
+        moneyFormatWithCurrency: {{ shop.money_with_currency_format | json }},
+      };
+    </script>
+    {% comment %}End filter code{% endcomment %}

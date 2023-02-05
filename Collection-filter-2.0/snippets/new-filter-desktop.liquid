@@ -1,0 +1,115 @@
+<collection-filters>
+   <form class="filter-form desktop-filter" id="DesktopFilter">
+      {%- assign color_label = 'color,colour,couleur,colore,farbe,색,色,färg,farve' | split: ',' -%} 
+
+      {%- for filter in collection.filters -%} 
+        {%- assign downcase_filter_label = filter.label | downcase -%} 
+
+        {%- case filter.type -%}
+
+          {%- when 'boolean' or 'list' -%}
+            {%- if color_label contains downcase_filter_label -%}
+
+              {%- assign color_swatch_config = settings.color_swatch_config | newline_to_br | split: '<br />' -%} 
+              <div class="details filter-block desktop-fil js-filter" data-index="{{ forloop.index }}">
+                 <div class="filter-heading">
+                    <span>{{ filter.label }}</span> {%- if filter.active_values.size > 0 -%}{%- endif -%} <span class="facets__selected facets__selected_desktop">({{ filter.active_values.size }})</span>
+                    <span class="Collapsible__Plus"></span>
+                 </div>
+                 <div class="filter-details">
+                    <ul class="filter-list filter-color-list">
+                       {%- for filter_value in filter.values -%} 
+                       <li class="filter-list-item {% if filter_value.count == 0 and filter_value.active == false -%}click-disabled{%- endif %}">
+                          <input class="filterTrigger" type="checkbox" name="{{ filter_value.param_name }}" value="{{ filter_value.value }}" id="Filter-{{ filter.param_name }}-{{ forloop.index }}" {% if filter_value.active -%}checked{%- endif %} {% if filter_value.count == 0 and filter_value.active == false -%}disabled{%- endif %}> 
+
+                          <label for="Filter-{{ filter.param_name }}-{{ forloop.index }}" class="ColorSwatch" data-tooltip="{{ filter_value.label | escape }}" style="{% render 'color-swatch-style', color_swatch_config: color_swatch_config, value: filter_value.label %}">
+                          <span class="hidden">{{ filter_value.label }} ({{ filter_value.count }})</span>
+                          </label>
+                       </li>
+                       {%- endfor -%} 
+                    </ul>
+                 </div>
+              </div>
+
+            {%- else -%} 
+
+              {%- if filter.type == 'list' -%} 
+                <div class="details filter-block desktop-fil js-filter" data-index="{{ forloop.index }}">
+                   <div class="filter-heading">
+                      <span>{{ filter.label }}</span> {%- if filter.active_values.size > 0 -%}{%- endif -%} <span class="facets__selected facets__selected_desktop">({{ filter.active_values.size }})</span>
+                      <span class="Collapsible__Plus"></span>
+                   </div>
+                   <div class="filter-details">
+                      <ul class="filter-list">
+                         {%- for filter_value in filter.values -%} 
+                         <li class="filter-list-item {% if filter_value.count == 0 and filter_value.active == false -%}click-disabled{%- endif %}">
+                            <input class="filterTrigger" type="checkbox" name="{{ filter_value.param_name }}" value="{{ filter_value.value }}" id="Filter-{{ filter.param_name }}-{{ forloop.index }}" {% if filter_value.active -%}checked{%- endif %} {% if filter_value.count == 0 and filter_value.active == false -%}disabled{%- endif %}>
+                            <svg class="filter-checkmark" aria-hidden="true" focusable="false" role="presentation" width="14" height="14" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 14">
+                               <path class="faceted-filter-group-display__checkmark-check" fill="none" d="M2.5 7L5.5 10L11.5 4"></path>
+                            </svg>
+                            <label for="Filter-{{ filter.param_name }}-{{ forloop.index }}">
+                            {{ filter_value.label }} ({{ filter_value.count }}) </label>
+                         </li>
+                         {%- endfor -%} 
+                      </ul>
+                   </div>
+                </div>
+              {%- endif -%}
+
+            {%- endif -%}
+
+          {%- when 'price_range' -%} 
+            <div class="details filter-block desktop-fil js-filter" data-index="{{ forloop.index }}">
+               <div class="filter-heading">
+                  <span>{{ filter.label }}</span> 
+                  <span class="Collapsible__Plus"></span>
+               </div>
+               <div class="filter-details">
+                  <div class="filter-price">
+                     {% comment %}<price-ranges class="facets__price">
+                        <span class="field-currency">{{ cart.currency.symbol }}</span>
+                        <div class="field">
+                           <input class="field__input" name="{{ filter.min_value.param_name }}" id="Filter-{{ filter.label | escape }}-GTE" {%- if filter.min_value.value -%} {%- if uses_comma_decimals -%}value="{{ filter.min_value.value | money_without_currency | replace: '.', '' | replace: ',', '.' }}" {%- else -%}value="{{ filter.min_value.value | money_without_currency | replace: ',', '' }}" {% endif %} {%- endif -%} type="number" placeholder="0" min="0" {%- if uses_comma_decimals -%}max="{{ filter.range_max | money_without_currency | replace: '.', '' | replace: ',', '.' }}" {%- else -%}max="{{ filter.range_max | money_without_currency | replace: ',', '' }}" {% endif %}>
+                           <label class="field__label" for="Filter-{{ filter.label | escape }}-GTE">Form</label>
+                        </div>
+                        <span class="field-currency">{{ cart.currency.symbol }}</span>
+                        <div class="field">
+                           <input class="field__input" name="{{ filter.max_value.param_name }}" id="Filter-{{ filter.label | escape }}-LTE" {%- if filter.max_value.value -%}{%- if uses_comma_decimals -%}value="{{ filter.max_value.value | money_without_currency | replace: '.', '' | replace: ',', '.' }}" {%- else -%}value="{{ filter.max_value.value | money_without_currency | replace: ',', '' }}" {% endif %} {%- endif -%} type="number" min="0" {%- if uses_comma_decimals -%} placeholder="{{ filter.range_max | money_without_currency | replace: '.', '' | replace: ',', '.' }}" max="{{ filter.range_max | money_without_currency | replace: '.', '' | replace: ',', '.' }}" {%- else -%} placeholder="{{ filter.range_max | money_without_currency | replace: ',', '' }}" max="{{ filter.range_max | money_without_currency | replace: ',', '' }}" {% endif %}>
+                           <label class="field__label" for="Filter-{{ filter.label | escape }}-LTE">to</label>
+                        </div>
+                     </price-ranges>{% endcomment %}
+                     
+                     <div class="filter-price-from">
+                        <price-ranges>
+                           <div class="price-top-part">
+                              <div class="price-flex"> 
+                                {%- assign min_value = filter.min_value.value | default: 0.0 | divided_by: 100.0 -%} 
+                                {%- assign max_value = filter.max_value.value | default: filter.range_max | divided_by: 100.0  -%} 
+                                {% assign min_value_round = min_value | ceil | times: 100.0  %} 
+                                {% assign max_value_round = max_value | ceil | times: 100.0  %} 
+                                {%- assign range_max = filter.range_max | divided_by: 100.0 | ceil -%} <label for="price_lower_val">
+                                 <span id="price_lower_val">{{ min_value_round | money }}</span>
+                                 </label>
+                              </div>
+                              <div class="price-flex">
+                                 <label for="price_upper_val">
+                                    <span2 id="price_upper_val">{{ max_value_round | money }}</span2>
+                                 </label>
+                              </div>
+                           </div>
+                           <input name="{{ filter.min_value.param_name }}" id="Filter-{{ filter.min_value.param_name }}" {% if filter.min_value.value -%}value="{{ min_value }}" {%- endif %}type="number" placeholder="0" min="0" max="{{ range_max }}" class="update_min_price">
+                           <input name="{{ filter.max_value.param_name }}" id="Filter-{{ filter.max_value.param_name }}" {% if filter.max_value.value -%}value="{{ max_value_round | money_without_currency }}" {%- endif %}type="number" placeholder="{{ max_value_round | money_without_currency }}" min="0" max="{{ range_max }}" class="update_max_price">
+                           <input type="range" class="price_lower" value="{{ min_value  }}" placeholder="0" min="0" max="{{ range_max }}">
+                           <input type="range" class="price_upper" value="{{ max_value_round | money_without_currency }}" placeholder="{{ max_value_round | money_without_currency }}" min="0" max="{{ range_max   }}">
+                        </price-ranges>
+                     </div>
+                     
+                  </div>
+               </div>
+            </div>
+        {%- endcase -%}
+
+      {%- endfor -%} 
+
+   </form>
+</collection-filters>

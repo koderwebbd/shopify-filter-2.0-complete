@@ -1,0 +1,11 @@
+{
+  "name": "Color swatch",
+  "settings": [
+    {
+      "type": "textarea",
+      "id": "color_swatch_config",
+      "label": "Configuration",
+      "info": "Each rule must be in its own line. [Learn more](https:\/\/support.maestrooo.com\/article\/80-product-uploading-custom-color-for-color-swatch) about the exact naming convention."
+    }
+  ]
+}

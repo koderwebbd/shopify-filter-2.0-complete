@@ -1,0 +1,72 @@
+{% assign has_active_filters_mobile = false %}
+
+{% capture active_filter_mobile %}
+
+	{%- for filter in collection.filters -%}
+      {%- for value in filter.active_values -%}
+      	{% assign has_active_filters_mobile = true %}
+        <custom-facet-remove>
+          <a href="{{ value.url_to_remove }}" class="active-remove-filter-mobile">
+            <span class="text">
+              {{ filter.label }}: {{ value.label | escape }}
+            </span>
+            <span>{% render 'icon-close-small' %}</span>
+          </a>
+        </custom-facet-remove>
+      {%- endfor -%}
+      {% if filter.type == "price_range" %}
+        {%- if filter.min_value.value != nil or filter.max_value.value != nil -%}
+          {% assign has_active_filters_mobile = true %}
+          <custom-facet-remove>
+            <a href="{{ filter.url_to_remove }}" class="active-remove-filter-mobile">
+              <span class="text">
+                {%- if filter.min_value.value -%}
+                	{{ filter.min_value.value | divided_by: 100.0 | ceil | times: 100.0 | money }}
+                {%- else -%}
+                	{{ 0 | money }}
+                {%- endif -%}-
+                {%- if filter.max_value.value -%}
+                	{{ filter.max_value.value | divided_by: 100.0 | ceil | times: 100.0 | money }}
+                {%- else -%}
+                	{{ filter.range_max | divided_by: 100.0 | ceil | times: 100.0 | money }}
+                {%- endif -%}
+              </span>
+              <span>{% render 'icon-close-small' %}</span>
+            </a>
+
+          </custom-facet-remove>
+        {%- endif -%}
+      {% endif %}
+    {%- endfor -%}
+
+{% endcapture %}
+<div class="mobile-filter-top">
+
+	<div class="mobile-filter-heading-clear">
+		<div class="filter-heading-s">
+			<h3>Filter by:</h3>
+		</div>
+
+			
+		<div class="clear-button-mobile">
+			{% if has_active_filters_mobile == true -%}
+				<custom-facet-remove>
+					<a href="{{ collection.url }}" class="mobile-active-filters-clear">Clear all</a>
+				</custom-facet-remove>
+			{%- endif %}
+		</div>
+		
+
+		<span tabindex="0" class="mobile-facets__close" id="filter-close-icon">
+			<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" role="presentation" class="icon icon-close" fill="none" viewBox="0 0 18 17">
+			<path d="M.865 15.978a.5.5 0 00.707.707l7.433-7.431 7.579 7.282a.501.501 0 00.846-.37.5.5 0 00-.153-.351L9.712 8.546l7.417-7.416a.5.5 0 10-.707-.708L8.991 7.853 1.413.573a.5.5 0 10-.693.72l7.563 7.268-7.418 7.417z" fill="currentColor"></path>
+			</svg>
+		</span>
+	</div>
+
+	<div class="active-filters-mobile">
+		{{ active_filter_mobile }}
+	</div>
+     	  	  	  	
+			         
+</div>
